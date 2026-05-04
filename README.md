@@ -11,9 +11,8 @@ No subscription. No calendar UI. No coaching platform. Just the bridge between A
 ## What it does
 
 1. Paste a workout JSON from Claude, ChatGPT, or any AI assistant — or upload a `.json` / `.xml` file
-2. See a live preview of your steps, durations, and pace targets
-3. **Convert to FIT** — download a Garmin-compatible `.fit` file to copy onto your device, or
-4. **Push to Garmin Connect** — enter your Garmin credentials and the workout lands directly in your account, ready to sync to your watch
+2. See a live preview of your steps, durations, and pace targets (repeat blocks shown as grouped rows)
+3. **Push to Garmin Connect** — enter your Garmin credentials and the workout lands directly in your account, ready to sync to your watch
 
 ## Privacy
 
@@ -67,7 +66,6 @@ Full schema reference is available in the app under **Schema Reference**.
 
 - **Backend**: FastAPI + Python
 - **Frontend**: Vanilla JS, no build step
-- **FIT encoding**: [fit-tool](https://pypi.org/project/fit-tool/)
 - **Garmin Connect**: [garminconnect](https://pypi.org/project/garminconnect/)
 
 ## Contributing
