@@ -37,6 +37,7 @@
   let _downloadBlob     = null;
   let _downloadFilename = 'workout.fit';
   let _pasteText        = null;  // set when user pastes; cleared when a file is chosen
+  let _previewController = null;
 
   function getActiveFile() {
     if (_pasteText !== null) {
@@ -267,16 +268,27 @@
     const f = getActiveFile();
     if (!f) return;
 
+    if (_previewController) _previewController.abort();
+    _previewController = new AbortController();
+    const { signal } = _previewController;
+
     const formData = new FormData();
     formData.append('file', f);
 
     try {
-      const response = await fetch('/api/preview', { method: 'POST', body: formData });
-      if (!response.ok) return;
-      const data = await response.json();
-      renderPreview(data);
-    } catch (_) {
-      // preview is best-effort; convert will surface any real errors
+      const response = await fetch('/api/preview', { method: 'POST', body: formData, signal });
+      if (response.ok) {
+        const data = await response.json();
+        renderPreview(data);
+      } else if (response.status === 422) {
+        const data = await response.json();
+        renderErrors(data.detail?.errors || data.errors || []);
+      }
+      // Other non-OK responses are silent — Convert will give the real error
+    } catch (err) {
+      if (err.name !== 'AbortError') {
+        // Network errors are silent
+      }
     }
   }
 
@@ -344,5 +356,26 @@
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;');
+  }
+
+  // ── AI prompt copy button ──────────────────────────────────────────────────
+
+  const aiPromptCopy = document.getElementById('ai-prompt-copy');
+  const aiPromptText = document.getElementById('ai-prompt-text');
+  if (aiPromptCopy && aiPromptText) {
+    aiPromptCopy.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(aiPromptText.textContent.trim());
+        aiPromptCopy.textContent = 'Copied!';
+        aiPromptCopy.classList.add('copied');
+        setTimeout(() => {
+          aiPromptCopy.textContent = 'Copy prompt';
+          aiPromptCopy.classList.remove('copied');
+        }, 2000);
+      } catch (_) {
+        aiPromptCopy.textContent = 'Copy failed';
+        setTimeout(() => { aiPromptCopy.textContent = 'Copy prompt'; }, 2000);
+      }
+    });
   }
 })();

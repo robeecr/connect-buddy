@@ -4,6 +4,7 @@ import json
 
 from fastapi import APIRouter, HTTPException, UploadFile
 from fastapi.responses import JSONResponse
+from pydantic import ValidationError
 
 from ..core.garmin_connect_parser import is_garmin_connect_format, parse_garmin_connect
 from ..core.models import (
@@ -111,7 +112,14 @@ async def preview_workout(file: UploadFile) -> JSONResponse:
         if errors:
             raise HTTPException(status_code=422, detail={"errors": errors})
 
-    workout = WorkoutDefinition(**data)
+    try:
+        workout = WorkoutDefinition(**data)
+    except ValidationError as exc:
+        errors = [
+            {"path": " → ".join(str(loc) for loc in e["loc"]), "message": e["msg"]}
+            for e in exc.errors()
+        ]
+        raise HTTPException(status_code=422, detail={"errors": errors})
 
     steps = [
         {

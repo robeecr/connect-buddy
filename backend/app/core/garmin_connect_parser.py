@@ -107,6 +107,18 @@ def _expand_steps(raw_steps: list[dict]) -> list[dict]:
 
     for rep in repeat_step_list:
         rep_order = rep.get("stepOrder", 0)
+
+        # Nested format: children are embedded directly inside the repeat step.
+        # Their stepOrder values are local to the block, not global, so they cannot
+        # be found via flat-list position or childStepId matching.
+        nested = rep.get("workoutSteps")
+        if nested:
+            repeat_children[rep_order] = [
+                s for s in nested
+                if (s.get("stepType") or {}).get("stepTypeKey") != "repeat"
+            ]
+            continue
+
         group_id = rep.get("childStepId")
 
         if group_id is not None:

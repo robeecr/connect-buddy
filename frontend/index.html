@@ -67,6 +67,14 @@
           aria-label="Paste workout content"
         ></textarea>
 
+        <details class="ai-prompt-hint">
+          <summary>Not sure what to paste? Use this prompt in Claude or ChatGPT</summary>
+          <div class="ai-prompt-body">
+            <p class="ai-prompt-text" id="ai-prompt-text">Generate a running workout in Garmin Connect JSON format. Include a 10-minute warm-up, 4x800m intervals at 4:30–4:40 /km with 90-second recovery jogs, and a 10-minute cool-down. Use pace targets with targetValueOne and targetValueTwo as seconds per km.</p>
+            <button class="ai-prompt-copy" id="ai-prompt-copy" type="button">Copy prompt</button>
+          </div>
+        </details>
+
         <div class="creds-section">
           <div class="creds-heading">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="creds-icon" aria-hidden="true">
