@@ -2,14 +2,6 @@
 
 After downloading your `.fit` file from Connect Buddy, follow these steps to import it into Garmin Connect.
 
-## Web (connect.garmin.com)
-
-1. Log in at **connect.garmin.com**
-2. Click **Training** in the top navigation → **Workouts**
-3. Click **Import Workout** (top-right corner)
-4. Select the downloaded `.fit` file
-5. The workout will appear in your Workouts list immediately
-
 ## Sync to your device
 
 **Via Garmin Connect Mobile (iOS / Android):**
