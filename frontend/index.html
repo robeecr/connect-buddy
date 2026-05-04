@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Connect Buddy — Workout to FIT Converter</title>
+  <title>Connect Buddy — Push Workouts to Garmin</title>
   <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
@@ -14,7 +14,7 @@
           <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
         </svg>
         <span class="brand-name">Connect Buddy</span>
-        <span class="brand-tagline">Workout → FIT</span>
+        <span class="brand-tagline">Workout → Garmin</span>
       </div>
       <button class="schema-toggle" id="schema-toggle" aria-expanded="false" aria-controls="schema-panel">
         Schema Reference
@@ -28,7 +28,7 @@
   <main class="main">
     <section class="converter-section" aria-label="Workout converter">
       <div class="card">
-        <h1 class="card-title">Convert Workout to FIT</h1>
+        <h1 class="card-title">Push Workout to Garmin</h1>
         <p class="card-subtitle">Upload a JSON or XML workout file, or paste the output directly from Claude or ChatGPT.</p>
 
         <div
@@ -96,14 +96,6 @@
         </div>
 
         <div class="action-row">
-          <button class="convert-btn" id="convert-btn" disabled>
-            <span class="btn-text">Convert to FIT</span>
-            <span class="btn-spinner" aria-hidden="true" hidden>
-              <svg class="spinner-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
-              </svg>
-            </span>
-          </button>
           <button class="push-btn" id="push-btn" disabled>
             <span class="btn-text">Push to Garmin Connect</span>
             <span class="btn-spinner" aria-hidden="true" hidden>
@@ -152,35 +144,6 @@
         <ul class="error-list" id="error-list" aria-label="Validation errors"></ul>
       </div>
 
-      <div class="result-panel success-panel" id="success-panel" hidden aria-live="polite">
-        <div class="panel-header success-header">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="panel-icon" aria-hidden="true">
-            <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
-            <polyline points="22 4 12 14.01 9 11.01"/>
-          </svg>
-          <span class="panel-title">FIT file ready</span>
-        </div>
-        <div class="success-body">
-          <p class="file-info" id="file-info"></p>
-          <button class="download-btn" id="download-btn">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
-              <polyline points="17 8 12 13 7 8"/>
-              <line x1="12" y1="3" x2="12" y2="13"/>
-            </svg>
-            Download FIT file
-          </button>
-          <div class="import-guide">
-            <p class="import-title">How to load onto your Garmin device:</p>
-            <ol class="import-steps">
-              <li>Connect your device via <strong>USB</strong></li>
-              <li>Copy the file to <strong>GARMIN/WORKOUTS/</strong> on the device</li>
-              <li>Eject and the workout appears under <strong>Training &gt; Workouts</strong></li>
-            </ol>
-          </div>
-        </div>
-      </div>
-
       <div class="result-panel push-success-panel" id="push-success-panel" hidden aria-live="polite">
         <div class="panel-header push-success-header">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="panel-icon" aria-hidden="true">
@@ -224,7 +187,7 @@
   </main>
 
   <footer class="site-footer">
-    <p>Connect Buddy MVP &mdash; Garmin FIT workout generator</p>
+    <p>Connect Buddy &mdash; Push structured workouts to Garmin Connect</p>
   </footer>
 
   <script src="js/app.js" defer></script>

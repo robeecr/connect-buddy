@@ -4,13 +4,12 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pathlib import Path
 
-from .api.convert import router
 from .api.preview import router as preview_router
 from .api.push import router as push_router
 
 app = FastAPI(
     title="Connect Buddy",
-    description="Convert workout definitions to Garmin FIT files",
+    description="Push structured workouts to Garmin Connect",
     version="0.1.0",
 )
 
@@ -21,7 +20,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(router)
 app.include_router(preview_router)
 app.include_router(push_router)
 

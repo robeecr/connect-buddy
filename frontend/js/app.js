@@ -4,17 +4,10 @@
   const dropZone    = document.getElementById('drop-zone');
   const fileInput   = document.getElementById('file-input');
   const dropLabel   = document.getElementById('drop-label');
-  const convertBtn  = document.getElementById('convert-btn');
-  const btnText     = convertBtn.querySelector('.btn-text');
-  const btnSpinner  = convertBtn.querySelector('.btn-spinner');
 
   const errorPanel  = document.getElementById('error-panel');
   const errorList   = document.getElementById('error-list');
   const errorCount  = document.getElementById('error-count-label');
-
-  const successPanel = document.getElementById('success-panel');
-  const fileInfo     = document.getElementById('file-info');
-  const downloadBtn  = document.getElementById('download-btn');
 
   const genericPanel = document.getElementById('generic-error-panel');
   const genericMsg   = document.getElementById('generic-error-msg');
@@ -34,8 +27,6 @@
 
   const pasteArea = document.getElementById('paste-area');
 
-  let _downloadBlob     = null;
-  let _downloadFilename = 'workout.fit';
   let _pasteText        = null;  // set when user pastes; cleared when a file is chosen
   let _previewController = null;
 
@@ -56,13 +47,11 @@
     pasteArea.classList.toggle('has-content', text.trim().length > 0);
     if (!text.trim()) {
       _pasteText = null;
-      convertBtn.disabled = true;
       updatePushBtn();
       clearPanels();
       return;
     }
     _pasteText = text;
-    convertBtn.disabled = false;
     updatePushBtn();
     clearPanels();
     loadPreview();
@@ -82,7 +71,6 @@
 
   function onFileChosen(name) {
     dropLabel.innerHTML = `Selected: <strong>${escapeHtml(name)}</strong>`;
-    convertBtn.disabled = false;
     updatePushBtn();
     clearPanels();
     loadPreview();
@@ -130,50 +118,6 @@
 
   garminEmail.addEventListener('input', updatePushBtn);
   garminPassword.addEventListener('input', updatePushBtn);
-
-  // ── Convert ────────────────────────────────────────────────────────────────
-
-  convertBtn.addEventListener('click', async () => {
-    const f = getActiveFile();
-    if (!f) return;
-
-    setLoading(true);
-    clearPanels();
-
-    const formData = new FormData();
-    formData.append('file', f);
-
-    try {
-      const response = await fetch('/api/convert', { method: 'POST', body: formData });
-
-      if (response.ok) {
-        const blob = await response.blob();
-        const disposition = response.headers.get('Content-Disposition') || '';
-        _downloadFilename = extractFilename(disposition) || 'workout.fit';
-        _downloadBlob = blob;
-
-        fileInfo.textContent = `${_downloadFilename}  (${formatBytes(blob.size)})`;
-        showPanel(successPanel);
-
-      } else if (response.status === 422) {
-        const data = await response.json();
-        renderErrors(data.detail?.errors || data.errors || []);
-
-      } else {
-        let msg = `Server error ${response.status}`;
-        try {
-          const d = await response.json();
-          msg = d.detail?.message || d.message || msg;
-        } catch (_) {}
-        showGenericError(msg);
-      }
-
-    } catch (err) {
-      showGenericError(`Network error: ${err.message}`);
-    } finally {
-      setLoading(false);
-    }
-  });
 
   // ── Push to Garmin ─────────────────────────────────────────────────────────
 
@@ -228,36 +172,11 @@
     pushBtnSpinner.hidden = !on;
   }
 
-  // ── Download ───────────────────────────────────────────────────────────────
-
-  downloadBtn.addEventListener('click', () => {
-    if (!_downloadBlob) return;
-    triggerDownload(_downloadBlob, _downloadFilename);
-  });
-
-  function triggerDownload(blob, filename) {
-    const url = URL.createObjectURL(blob);
-    const a   = document.createElement('a');
-    a.href    = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }
-
   // ── UI helpers ─────────────────────────────────────────────────────────────
-
-  function setLoading(on) {
-    convertBtn.disabled = on;
-    btnText.hidden      = on;
-    btnSpinner.hidden   = !on;
-  }
 
   function clearPanels() {
     hidePanel(previewPanel);
     hidePanel(errorPanel);
-    hidePanel(successPanel);
     hidePanel(pushSuccessPanel);
     hidePanel(genericPanel);
     errorList.innerHTML = '';
@@ -284,7 +203,6 @@
         const data = await response.json();
         renderErrors(data.detail?.errors || data.errors || []);
       }
-      // Other non-OK responses are silent — Convert will give the real error
     } catch (err) {
       if (err.name !== 'AbortError') {
         // Network errors are silent
@@ -338,16 +256,6 @@
       .replace(/\[(\d+)\]/g, '[$1]')
       .replace(/\.([^.[]+)/g, '[$1]')
       .replace(/^\./, '');
-  }
-
-  function extractFilename(disposition) {
-    const match = disposition.match(/filename="?([^";]+)"?/i);
-    return match ? match[1].trim() : null;
-  }
-
-  function formatBytes(n) {
-    if (n < 1024) return `${n} B`;
-    return `${(n / 1024).toFixed(1)} KB`;
   }
 
   function escapeHtml(s) {
