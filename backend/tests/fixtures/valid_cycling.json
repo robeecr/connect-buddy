@@ -1,0 +1,45 @@
+{
+  "name": "Tue Intervals",
+  "sport": "cycling",
+  "sub_sport": "road",
+  "description": "5x5 min threshold intervals with 3 min recovery",
+  "steps": [
+    {
+      "name": "Warm Up",
+      "intensity": "warmup",
+      "duration": {"type": "time", "value_s": 600},
+      "target": {"type": "heart_rate", "zone": 1}
+    },
+    {
+      "name": "Interval 1",
+      "intensity": "interval",
+      "duration": {"type": "time", "value_s": 300},
+      "target": {"type": "power", "zone": 4},
+      "secondary_target": {"type": "cadence", "low_rpm": 85, "high_rpm": 100}
+    },
+    {
+      "name": "Recovery 1",
+      "intensity": "recovery",
+      "duration": {"type": "time", "value_s": 180},
+      "target": {"type": "heart_rate", "zone": 1}
+    },
+    {
+      "name": "Interval 2",
+      "intensity": "interval",
+      "duration": {"type": "time", "value_s": 300},
+      "target": {"type": "power", "zone": 4}
+    },
+    {
+      "name": "Recovery 2",
+      "intensity": "recovery",
+      "duration": {"type": "time", "value_s": 180},
+      "target": {"type": "open"}
+    },
+    {
+      "name": "Cool Down",
+      "intensity": "cooldown",
+      "duration": {"type": "open"},
+      "target": {"type": "open"}
+    }
+  ]
+}

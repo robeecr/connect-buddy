@@ -1,0 +1,9 @@
+fastapi==0.115.0
+uvicorn[standard]==0.30.0
+python-multipart==0.0.9
+fit-tool==0.9.14
+garmin-fit-sdk==21.202.0
+garminconnect==0.3.3
+jsonschema==4.23.0
+lxml==5.3.0
+pydantic==2.10.6

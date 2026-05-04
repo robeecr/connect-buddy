@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+dist/
+build/
+.env
+.venv
+venv/
+*.fit
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+node_modules/
+*.log
+connect_buddy_tokens/

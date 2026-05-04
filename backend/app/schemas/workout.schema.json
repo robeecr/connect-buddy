@@ -1,0 +1,207 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://connect-buddy/schemas/workout.schema.json",
+  "title": "ConnectBuddyWorkout",
+  "description": "Canonical workout definition for Connect Buddy FIT file generation",
+  "type": "object",
+  "required": ["name", "sport", "steps"],
+  "additionalProperties": false,
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 16,
+      "description": "Workout name as displayed on the Garmin device (16-char device limit)"
+    },
+    "sport": {
+      "type": "string",
+      "enum": ["running", "cycling", "swimming", "walking", "generic"],
+      "description": "Maps to FIT sport enum"
+    },
+    "sub_sport": {
+      "type": "string",
+      "enum": [
+        "generic", "treadmill", "street", "trail", "track",
+        "indoor_cycling", "spin", "road", "mountain", "downhill",
+        "recumbent", "cyclocross", "hand_cycling", "track_cycling",
+        "indoor_rowing", "elliptical", "stair_climbing",
+        "lap_swimming", "open_water"
+      ],
+      "description": "Optional sub-sport refinement"
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 254,
+      "description": "Human-readable description (not stored in FIT, documentation only)"
+    },
+    "steps": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 100,
+      "items": { "$ref": "#/$defs/WorkoutStep" },
+      "description": "Ordered list of workout steps"
+    }
+  },
+  "$defs": {
+    "WorkoutStep": {
+      "type": "object",
+      "required": ["name", "intensity", "duration"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 16,
+          "description": "Step name shown on device"
+        },
+        "intensity": {
+          "type": "string",
+          "enum": [
+            "active", "easy", "warmup", "cooldown", "recovery",
+            "interval", "repeat", "threshold", "work", "hard_interval"
+          ]
+        },
+        "duration": { "$ref": "#/$defs/Duration" },
+        "target": { "$ref": "#/$defs/Target" },
+        "secondary_target": { "$ref": "#/$defs/Target" },
+        "notes": {
+          "type": "string",
+          "maxLength": 254
+        }
+      }
+    },
+    "Duration": {
+      "type": "object",
+      "required": ["type"],
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "type": { "const": "time" },
+            "value_s": { "type": "number", "minimum": 1, "maximum": 86400 }
+          },
+          "required": ["type", "value_s"]
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "type": { "const": "distance" },
+            "value_m": { "type": "number", "minimum": 1, "maximum": 100000 }
+          },
+          "required": ["type", "value_m"]
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "type": { "const": "calories" },
+            "value_kcal": { "type": "integer", "minimum": 1, "maximum": 10000 }
+          },
+          "required": ["type", "value_kcal"]
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "type": { "const": "hr_less_than" },
+            "value_bpm": { "type": "integer", "minimum": 60, "maximum": 220 }
+          },
+          "required": ["type", "value_bpm"]
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "type": { "const": "hr_greater_than" },
+            "value_bpm": { "type": "integer", "minimum": 60, "maximum": 220 }
+          },
+          "required": ["type", "value_bpm"]
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "type": { "const": "reps" },
+            "value_reps": { "type": "integer", "minimum": 1, "maximum": 1000 }
+          },
+          "required": ["type", "value_reps"]
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "type": { "const": "open" }
+          },
+          "required": ["type"]
+        }
+      ]
+    },
+    "Target": {
+      "type": "object",
+      "required": ["type"],
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "properties": { "type": { "const": "open" } },
+          "required": ["type"]
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "type": { "const": "heart_rate" },
+            "zone": { "type": "integer", "minimum": 1, "maximum": 5 }
+          },
+          "required": ["type", "zone"]
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "type": { "const": "heart_rate_custom" },
+            "low_bpm": { "type": "integer", "minimum": 60, "maximum": 220 },
+            "high_bpm": { "type": "integer", "minimum": 60, "maximum": 220 }
+          },
+          "required": ["type", "low_bpm", "high_bpm"]
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "type": { "const": "power" },
+            "zone": { "type": "integer", "minimum": 1, "maximum": 7 }
+          },
+          "required": ["type", "zone"]
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "type": { "const": "power_custom" },
+            "low_watts": { "type": "integer", "minimum": 0, "maximum": 2500 },
+            "high_watts": { "type": "integer", "minimum": 0, "maximum": 2500 }
+          },
+          "required": ["type", "low_watts", "high_watts"]
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "type": { "const": "cadence" },
+            "low_rpm": { "type": "integer", "minimum": 0, "maximum": 250 },
+            "high_rpm": { "type": "integer", "minimum": 0, "maximum": 250 }
+          },
+          "required": ["type", "low_rpm", "high_rpm"]
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "type": { "const": "speed" },
+            "low_ms": { "type": "number", "minimum": 0 },
+            "high_ms": { "type": "number", "minimum": 0 }
+          },
+          "required": ["type", "low_ms", "high_ms"]
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "type": { "const": "pace" },
+            "low_ms": { "type": "number", "minimum": 0 },
+            "high_ms": { "type": "number", "minimum": 0 }
+          },
+          "required": ["type", "low_ms", "high_ms"]
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="Workout">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Name" type="ShortString"/>
+        <xs:element name="Sport" type="SportEnum"/>
+        <xs:element name="SubSport" type="SubSportEnum" minOccurs="0"/>
+        <xs:element name="Description" type="LongString" minOccurs="0"/>
+        <xs:element name="Steps">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Step" type="WorkoutStepType" minOccurs="1" maxOccurs="100"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="WorkoutStepType">
+    <xs:sequence>
+      <xs:element name="Name" type="ShortString"/>
+      <xs:element name="Intensity" type="IntensityEnum"/>
+      <xs:element name="Duration" type="DurationType"/>
+      <xs:element name="Target" type="TargetType" minOccurs="0"/>
+      <xs:element name="SecondaryTarget" type="TargetType" minOccurs="0"/>
+      <xs:element name="Notes" type="LongString" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="DurationType">
+    <xs:sequence>
+      <xs:element name="Type" type="DurationTypeEnum"/>
+      <xs:element name="ValueSeconds" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="ValueMetres" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="ValueKcal" type="xs:integer" minOccurs="0"/>
+      <xs:element name="ValueBpm" type="xs:integer" minOccurs="0"/>
+      <xs:element name="ValueReps" type="xs:integer" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="TargetType">
+    <xs:sequence>
+      <xs:element name="Type" type="TargetTypeEnum"/>
+      <xs:element name="Zone" type="xs:integer" minOccurs="0"/>
+      <xs:element name="LowBpm" type="xs:integer" minOccurs="0"/>
+      <xs:element name="HighBpm" type="xs:integer" minOccurs="0"/>
+      <xs:element name="LowWatts" type="xs:integer" minOccurs="0"/>
+      <xs:element name="HighWatts" type="xs:integer" minOccurs="0"/>
+      <xs:element name="LowRpm" type="xs:integer" minOccurs="0"/>
+      <xs:element name="HighRpm" type="xs:integer" minOccurs="0"/>
+      <xs:element name="LowMs" type="xs:decimal" minOccurs="0"/>
+      <xs:element name="HighMs" type="xs:decimal" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:simpleType name="ShortString">
+    <xs:restriction base="xs:string">
+      <xs:minLength value="1"/>
+      <xs:maxLength value="16"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="LongString">
+    <xs:restriction base="xs:string">
+      <xs:maxLength value="254"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="SportEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="running"/>
+      <xs:enumeration value="cycling"/>
+      <xs:enumeration value="swimming"/>
+      <xs:enumeration value="walking"/>
+      <xs:enumeration value="generic"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="SubSportEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="generic"/>
+      <xs:enumeration value="treadmill"/>
+      <xs:enumeration value="street"/>
+      <xs:enumeration value="trail"/>
+      <xs:enumeration value="track"/>
+      <xs:enumeration value="indoor_cycling"/>
+      <xs:enumeration value="spin"/>
+      <xs:enumeration value="road"/>
+      <xs:enumeration value="mountain"/>
+      <xs:enumeration value="downhill"/>
+      <xs:enumeration value="recumbent"/>
+      <xs:enumeration value="cyclocross"/>
+      <xs:enumeration value="hand_cycling"/>
+      <xs:enumeration value="track_cycling"/>
+      <xs:enumeration value="indoor_rowing"/>
+      <xs:enumeration value="elliptical"/>
+      <xs:enumeration value="stair_climbing"/>
+      <xs:enumeration value="lap_swimming"/>
+      <xs:enumeration value="open_water"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="IntensityEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="active"/>
+      <xs:enumeration value="easy"/>
+      <xs:enumeration value="warmup"/>
+      <xs:enumeration value="cooldown"/>
+      <xs:enumeration value="recovery"/>
+      <xs:enumeration value="interval"/>
+      <xs:enumeration value="repeat"/>
+      <xs:enumeration value="threshold"/>
+      <xs:enumeration value="work"/>
+      <xs:enumeration value="hard_interval"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="DurationTypeEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="time"/>
+      <xs:enumeration value="distance"/>
+      <xs:enumeration value="calories"/>
+      <xs:enumeration value="hr_less_than"/>
+      <xs:enumeration value="hr_greater_than"/>
+      <xs:enumeration value="reps"/>
+      <xs:enumeration value="open"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="TargetTypeEnum">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="open"/>
+      <xs:enumeration value="heart_rate"/>
+      <xs:enumeration value="heart_rate_custom"/>
+      <xs:enumeration value="power"/>
+      <xs:enumeration value="power_custom"/>
+      <xs:enumeration value="cadence"/>
+      <xs:enumeration value="speed"/>
+      <xs:enumeration value="pace"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+</xs:schema>

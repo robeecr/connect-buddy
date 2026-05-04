@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workout>
+  <Name>Tue Intervals</Name>
+  <Sport>cycling</Sport>
+  <SubSport>road</SubSport>
+  <Description>5x5 min threshold intervals with 3 min recovery</Description>
+  <Steps>
+    <Step>
+      <Name>Warm Up</Name>
+      <Intensity>warmup</Intensity>
+      <Duration>
+        <Type>time</Type>
+        <ValueSeconds>600</ValueSeconds>
+      </Duration>
+      <Target>
+        <Type>heart_rate</Type>
+        <Zone>1</Zone>
+      </Target>
+    </Step>
+    <Step>
+      <Name>Interval 1</Name>
+      <Intensity>interval</Intensity>
+      <Duration>
+        <Type>time</Type>
+        <ValueSeconds>300</ValueSeconds>
+      </Duration>
+      <Target>
+        <Type>power</Type>
+        <Zone>4</Zone>
+      </Target>
+    </Step>
+    <Step>
+      <Name>Recovery 1</Name>
+      <Intensity>recovery</Intensity>
+      <Duration>
+        <Type>time</Type>
+        <ValueSeconds>180</ValueSeconds>
+      </Duration>
+      <Target>
+        <Type>open</Type>
+      </Target>
+    </Step>
+    <Step>
+      <Name>Cool Down</Name>
+      <Intensity>cooldown</Intensity>
+      <Duration>
+        <Type>open</Type>
+      </Duration>
+      <Target>
+        <Type>open</Type>
+      </Target>
+    </Step>
+  </Steps>
+</Workout>

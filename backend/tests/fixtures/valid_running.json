@@ -1,0 +1,44 @@
+{
+  "name": "Track 400s",
+  "sport": "running",
+  "sub_sport": "track",
+  "steps": [
+    {
+      "name": "Easy Jog",
+      "intensity": "warmup",
+      "duration": {"type": "distance", "value_m": 1600},
+      "target": {"type": "heart_rate_custom", "low_bpm": 120, "high_bpm": 140}
+    },
+    {
+      "name": "Fast 400",
+      "intensity": "interval",
+      "duration": {"type": "distance", "value_m": 400},
+      "target": {"type": "heart_rate", "zone": 4},
+      "notes": "Run at 5K race effort"
+    },
+    {
+      "name": "Jog 400",
+      "intensity": "recovery",
+      "duration": {"type": "distance", "value_m": 400},
+      "target": {"type": "heart_rate", "zone": 2}
+    },
+    {
+      "name": "Fast 400",
+      "intensity": "interval",
+      "duration": {"type": "distance", "value_m": 400},
+      "target": {"type": "heart_rate", "zone": 4}
+    },
+    {
+      "name": "Jog 400",
+      "intensity": "recovery",
+      "duration": {"type": "distance", "value_m": 400},
+      "target": {"type": "heart_rate", "zone": 2}
+    },
+    {
+      "name": "Cool Down",
+      "intensity": "cooldown",
+      "duration": {"type": "distance", "value_m": 1600},
+      "target": {"type": "heart_rate_custom", "low_bpm": 110, "high_bpm": 135}
+    }
+  ]
+}

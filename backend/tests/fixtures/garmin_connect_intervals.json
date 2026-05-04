@@ -1,0 +1,59 @@
+{
+  "workoutId": 99887766,
+  "workoutName": "5K Intervals",
+  "workoutSegments": [
+    {
+      "segmentOrder": 1,
+      "sportType": {
+        "sportTypeId": 1,
+        "sportTypeKey": "running"
+      },
+      "workoutSteps": [
+        {
+          "stepOrder": 1,
+          "stepType": {"stepTypeId": 1, "stepTypeKey": "warmup"},
+          "durationType": {"durationTypeId": 0, "durationTypeKey": "time"},
+          "durationValue": 600,
+          "targetType": {"workoutTargetTypeId": 1, "workoutTargetTypeKey": "no.target"},
+          "targetValueOne": null,
+          "targetValueTwo": null
+        },
+        {
+          "stepOrder": 2,
+          "stepType": {"stepTypeId": 6, "stepTypeKey": "repeat"},
+          "numberOfIterations": 3,
+          "childStepId": 1
+        },
+        {
+          "stepOrder": 3,
+          "childStepId": 1,
+          "stepType": {"stepTypeId": 3, "stepTypeKey": "interval"},
+          "durationType": {"durationTypeId": 0, "durationTypeKey": "time"},
+          "durationValue": 240,
+          "targetType": {"workoutTargetTypeId": 6, "workoutTargetTypeKey": "pace.zone"},
+          "targetValueOne": 240,
+          "targetValueTwo": 270
+        },
+        {
+          "stepOrder": 4,
+          "childStepId": 1,
+          "stepType": {"stepTypeId": 4, "stepTypeKey": "recovery"},
+          "durationType": {"durationTypeId": 0, "durationTypeKey": "time"},
+          "durationValue": 120,
+          "targetType": {"workoutTargetTypeId": 1, "workoutTargetTypeKey": "no.target"},
+          "targetValueOne": null,
+          "targetValueTwo": null
+        },
+        {
+          "stepOrder": 5,
+          "stepType": {"stepTypeId": 2, "stepTypeKey": "cooldown"},
+          "durationType": {"durationTypeId": 4, "durationTypeKey": "open"},
+          "durationValue": null,
+          "targetType": {"workoutTargetTypeId": 1, "workoutTargetTypeKey": "no.target"},
+          "targetValueOne": null,
+          "targetValueTwo": null
+        }
+      ]
+    }
+  ]
+}

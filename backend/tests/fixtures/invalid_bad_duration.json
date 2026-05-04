@@ -1,0 +1,11 @@
+{
+  "name": "Bad Duration",
+  "sport": "running",
+  "steps": [
+    {
+      "name": "Too Long",
+      "intensity": "active",
+      "duration": {"type": "time", "value_s": 99999}
+    }
+  ]
+}
