@@ -59,10 +59,7 @@ def is_garmin_connect_format(data: dict) -> bool:
 
 
 def parse_garmin_connect(data: dict) -> dict:
-    """
-    Convert a Garmin Connect REST API workout payload to a Connect Buddy schema dict.
-    Repeat steps are flattened into explicit repetitions.
-    """
+    """Convert a Garmin Connect REST API workout payload to a Connect Buddy schema dict."""
     name = str(data.get("workoutName") or "Workout")[:16]
 
     sport = "generic"
@@ -78,27 +75,28 @@ def parse_garmin_connect(data: dict) -> dict:
     for seg in data.get("workoutSegments") or []:
         raw_steps.extend(seg.get("workoutSteps") or [])
 
-    partial_steps = _expand_steps(raw_steps)
-    named_steps = _assign_names(partial_steps)
+    items = _collect_steps(raw_steps)
+    named_items = _assign_names(items)
 
-    result: dict = {"name": name, "sport": sport, "steps": named_steps}
+    result: dict = {"name": name, "sport": sport, "steps": named_items}
     notes = data.get("notes")
     if notes:
         result["description"] = str(notes)[:254]
     return result
 
 
-# ── Step expansion ─────────────────────────────────────────────────────────────
+# ── Step collection ─────────────────────────────────────────────────────────────
 
-def _expand_steps(raw_steps: list[dict]) -> list[dict]:
-    """Resolve repeat groups and return a flat list of partial step dicts (no names)."""
+def _collect_steps(raw_steps: list[dict]) -> list[dict]:
+    """Resolve repeat groups and return a list of step/repeat-block dicts (no names)."""
     if not raw_steps:
         return []
 
     sorted_steps = sorted(raw_steps, key=lambda s: s.get("stepOrder", 0))
 
     child_orders: set[int] = set()
-    repeat_children: dict[int, list[dict]] = {}
+    # Maps rep_order → {"iterations": int, "children": list[dict]}
+    repeat_info: dict[int, dict] = {}
 
     repeat_step_list = [
         s for s in sorted_steps
@@ -107,16 +105,17 @@ def _expand_steps(raw_steps: list[dict]) -> list[dict]:
 
     for rep in repeat_step_list:
         rep_order = rep.get("stepOrder", 0)
+        iterations = int(rep.get("numberOfIterations") or 1)
 
         # Nested format: children are embedded directly inside the repeat step.
         # Their stepOrder values are local to the block, not global, so they cannot
         # be found via flat-list position or childStepId matching.
         nested = rep.get("workoutSteps")
         if nested:
-            repeat_children[rep_order] = [
-                s for s in nested
-                if (s.get("stepType") or {}).get("stepTypeKey") != "repeat"
-            ]
+            repeat_info[rep_order] = {
+                "iterations": iterations,
+                "children": [s for s in nested if (s.get("stepType") or {}).get("stepTypeKey") != "repeat"],
+            }
             continue
 
         group_id = rep.get("childStepId")
@@ -129,7 +128,7 @@ def _expand_steps(raw_steps: list[dict]) -> list[dict]:
                 and (s.get("stepType") or {}).get("stepTypeKey") != "repeat"
             ]
             if canonical:
-                repeat_children[rep_order] = canonical
+                repeat_info[rep_order] = {"iterations": iterations, "children": canonical}
                 child_orders.update(s.get("stepOrder", -1) for s in canonical)
                 continue
 
@@ -138,7 +137,7 @@ def _expand_steps(raw_steps: list[dict]) -> list[dict]:
         else:
             children = _positional_children(sorted_steps, rep_order, None)
 
-        repeat_children[rep_order] = children
+        repeat_info[rep_order] = {"iterations": iterations, "children": children}
         child_orders.update(s.get("stepOrder", -1) for s in children)
 
     result: list[dict] = []
@@ -149,12 +148,10 @@ def _expand_steps(raw_steps: list[dict]) -> list[dict]:
 
         step_type_key = (step.get("stepType") or {}).get("stepTypeKey", "")
         if step_type_key == "repeat":
-            iterations = int(step.get("numberOfIterations") or 1)
-            for _ in range(iterations):
-                for child in repeat_children.get(order, []):
-                    converted = _convert_step(child)
-                    if converted is not None:
-                        result.append(converted)
+            info = repeat_info.get(order, {"iterations": 1, "children": []})
+            converted_children = [c for c in (_convert_step(ch) for ch in info["children"]) if c is not None]
+            if converted_children:
+                result.append({"type": "repeat", "iterations": info["iterations"], "steps": converted_children})
         else:
             converted = _convert_step(step)
             if converted is not None:
@@ -301,26 +298,33 @@ def _convert_target(type_key: str, val1, val2) -> dict | None:
 
 # ── Name assignment ────────────────────────────────────────────────────────────
 
-def _assign_names(steps: list[dict]) -> list[dict]:
+def _assign_names(items: list[dict]) -> list[dict]:
     """
     Add a `name` field to each step based on its intensity.
     Unique-intensity steps get a plain label ("Warm Up");
     duplicates are numbered ("Interval 1", "Interval 2", …).
+    Repeat block children are named independently within their block.
     """
     counts: Counter[str] = Counter()
-    bases: list[str] = []
-    for step in steps:
-        base = _INTENSITY_NAME_MAP.get(step.get("intensity", "active"), "Step")
-        counts[base] += 1
-        bases.append(base)
+    bases: list[str | None] = []
+    for item in items:
+        if item.get("type") == "repeat":
+            bases.append(None)
+        else:
+            base = _INTENSITY_NAME_MAP.get(item.get("intensity", "active"), "Step")
+            counts[base] += 1
+            bases.append(base)
 
     seen: Counter[str] = Counter()
     result = []
-    for step, base in zip(steps, bases):
-        if counts[base] > 1:
-            seen[base] += 1
-            name = f"{base} {seen[base]}"
+    for item, base in zip(items, bases):
+        if item.get("type") == "repeat":
+            result.append({**item, "steps": _assign_names(item["steps"])})
         else:
-            name = base
-        result.append({"name": name[:16], **step})
+            if counts[base] > 1:
+                seen[base] += 1
+                name = f"{base} {seen[base]}"
+            else:
+                name = base
+            result.append({"name": name[:16], **item})
     return result

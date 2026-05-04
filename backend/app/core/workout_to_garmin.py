@@ -8,6 +8,7 @@ from .models import (
     DurationOpen,
     DurationReps,
     DurationTime,
+    RepeatBlock,
     TargetCadence,
     TargetHeartRateCustom,
     TargetHeartRateZone,
@@ -55,10 +56,13 @@ _COND_REPS     = {"conditionTypeId": 7, "conditionTypeKey": "reps",             
 _COND_OPEN     = {"conditionTypeId": 1, "conditionTypeKey": "lap.button",             "displayOrder": 7, "displayable": True}
 
 
+_REPEAT_STEP_TYPE = {"stepTypeId": 6, "stepTypeKey": "repeat", "displayOrder": 6}
+
+
 def to_garmin_connect(workout: WorkoutDefinition) -> dict:
     """Convert a WorkoutDefinition to the Garmin Connect upload API format."""
     sport = _SPORT_TYPE.get(workout.sport, _SPORT_TYPE["generic"])
-    steps = [_build_step(i, s) for i, s in enumerate(workout.steps, 1)]
+    steps, _ = _build_items(workout.steps, start_order=1)
 
     result: dict = {
         "workoutName": workout.name,
@@ -76,6 +80,32 @@ def to_garmin_connect(workout: WorkoutDefinition) -> dict:
     if workout.description:
         result["description"] = workout.description
     return result
+
+
+def _build_items(items, start_order: int) -> tuple[list[dict], int]:
+    steps = []
+    order = start_order
+    for item in items:
+        if isinstance(item, RepeatBlock):
+            rep, order = _build_repeat_group(order, item)
+            steps.append(rep)
+        else:
+            steps.append(_build_step(order, item))
+            order += 1
+    return steps, order
+
+
+def _build_repeat_group(order: int, block: RepeatBlock) -> tuple[dict, int]:
+    child_steps, next_order = _build_items(block.steps, start_order=order + 1)
+    rep = {
+        "type": "RepeatGroupDTO",
+        "stepOrder": order,
+        "stepType": _REPEAT_STEP_TYPE,
+        "numberOfIterations": block.iterations,
+        "childStepId": order,
+        "workoutSteps": child_steps,
+    }
+    return rep, next_order
 
 
 def _build_step(order: int, step: WorkoutStep) -> dict:

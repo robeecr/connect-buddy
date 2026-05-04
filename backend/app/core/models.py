@@ -129,9 +129,15 @@ class WorkoutStep(BaseModel):
     notes: str | None = Field(default=None, max_length=254)
 
 
+class RepeatBlock(BaseModel):
+    type: Literal["repeat"] = "repeat"
+    iterations: int = Field(ge=1, le=99)
+    steps: list[WorkoutStep] = Field(min_length=1, max_length=20)
+
+
 class WorkoutDefinition(BaseModel):
     name: str = Field(min_length=1, max_length=16)
     sport: Literal["running", "cycling", "swimming", "walking", "generic"]
     sub_sport: str | None = None
     description: str | None = Field(default=None, max_length=254)
-    steps: list[WorkoutStep] = Field(min_length=1, max_length=100)
+    steps: list[WorkoutStep | RepeatBlock] = Field(min_length=1, max_length=100)

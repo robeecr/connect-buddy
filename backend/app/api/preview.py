@@ -15,6 +15,7 @@ from ..core.models import (
     DurationOpen,
     DurationReps,
     DurationTime,
+    RepeatBlock,
     TargetCadence,
     TargetHeartRateCustom,
     TargetHeartRateZone,
@@ -121,14 +122,28 @@ async def preview_workout(file: UploadFile) -> JSONResponse:
         ]
         raise HTTPException(status_code=422, detail={"errors": errors})
 
-    steps = [
-        {
-            "name": step.name,
-            "intensity": step.intensity,
-            "duration": _fmt_duration(step.duration),
-            "target": _fmt_target(step.target),
-        }
-        for step in workout.steps
-    ]
+    items = []
+    for item in workout.steps:
+        if isinstance(item, RepeatBlock):
+            items.append({
+                "type": "repeat",
+                "iterations": item.iterations,
+                "steps": [
+                    {
+                        "name": s.name,
+                        "intensity": s.intensity,
+                        "duration": _fmt_duration(s.duration),
+                        "target": _fmt_target(s.target),
+                    }
+                    for s in item.steps
+                ],
+            })
+        else:
+            items.append({
+                "name": item.name,
+                "intensity": item.intensity,
+                "duration": _fmt_duration(item.duration),
+                "target": _fmt_target(item.target),
+            })
 
-    return JSONResponse({"name": workout.name, "sport": workout.sport, "steps": steps})
+    return JSONResponse({"name": workout.name, "sport": workout.sport, "steps": items})

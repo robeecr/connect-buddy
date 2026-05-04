@@ -214,14 +214,28 @@
     previewName.textContent = data.name || 'Workout Preview';
     previewSport.textContent = data.sport || '';
 
-    previewSteps.innerHTML = (data.steps || []).map((step) => `
-      <tr data-intensity="${escapeHtml(step.intensity || '')}">
-        <td class="preview-step-name">${escapeHtml(step.name)}</td>
-        <td class="preview-duration">${escapeHtml(step.duration)}</td>
-        <td class="preview-target">${escapeHtml(step.target)}</td>
-      </tr>
-    `).join('');
-
+    const rows = [];
+    for (const item of (data.steps || [])) {
+      if (item.type === 'repeat') {
+        rows.push(`<tr class="repeat-header"><td colspan="3">&#x21BA; ${item.iterations}&times;</td></tr>`);
+        for (const step of item.steps) {
+          rows.push(`
+            <tr data-intensity="${escapeHtml(step.intensity || '')}" class="repeat-child">
+              <td class="preview-step-name">${escapeHtml(step.name)}</td>
+              <td class="preview-duration">${escapeHtml(step.duration)}</td>
+              <td class="preview-target">${escapeHtml(step.target)}</td>
+            </tr>`);
+        }
+      } else {
+        rows.push(`
+          <tr data-intensity="${escapeHtml(item.intensity || '')}">
+            <td class="preview-step-name">${escapeHtml(item.name)}</td>
+            <td class="preview-duration">${escapeHtml(item.duration)}</td>
+            <td class="preview-target">${escapeHtml(item.target)}</td>
+          </tr>`);
+      }
+    }
+    previewSteps.innerHTML = rows.join('');
     showPanel(previewPanel);
   }
 
